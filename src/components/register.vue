@@ -8,18 +8,18 @@
 			</h3>
 			<div class="content">
 				<label>手机号:</label>
-				<input type="text" placeholder="请输入你的手机号">
+				<input type="text" placeholder="请输入你的手机号" v-model="cs.phone">
 				<span class="error-msg">错误提示信息</span>
 			</div>
 			<div class="content">
 				<label>验证码:</label>
-				<input type="text" placeholder="请输入验证码">
-				<img ref="code" src="http://182.92.128.115/api/user/passport/code" alt="code">
+				<input type="text" placeholder="请输入验证码" v-model="cs.code">
+				<span @click="getYzm">获取验证码</span>
 				<span class="error-msg">错误提示信息</span>
 			</div>
 			<div class="content">
 				<label>登录密码:</label>
-				<input type="text" placeholder="请输入你的登录密码">
+				<input type="text" placeholder="请输入你的登录密码" v-model='cs.password'>
 				<span class="error-msg">错误提示信息</span>
 			</div>
 			<div class="content">
@@ -33,7 +33,7 @@
 				<span class="error-msg">错误提示信息</span>
 			</div>
 			<div class="btn">
-				<button>完成注册</button>
+				<button @click="zhuce">完成注册</button>
 			</div>
 		</div>
 
@@ -58,7 +58,47 @@
 
 <script>
 	export default {
-		name: 'Register'
+		// name: 'Register',
+		data() {
+			return {
+				cs: {
+					phone: '',
+					code: '',
+					password: ''
+				}
+			}
+		},
+		mounted() {
+
+		},
+		methods: {
+			getYzm() {
+				this.$http.get('/api/user/passport/sendCode/' + this.cs.phone).then(res => {
+					console.log(res);
+					if (res.code === 200) {
+						alert('注册成功。验证码为' + res.data)
+					}
+				})
+			},
+			zhuce() {
+				this.$http({
+					method: "post",
+					url: "/api/user/passport/register",
+					data: this.cs,
+				}).then(res => {
+					if (res.code === 200) {
+						alert('注册成功,将跳转登录页')
+						this.$router.push('/login')
+					}else{
+						alert(res.message)
+					}
+				})
+
+			}
+
+		}
+
+
 	}
 </script>
 
